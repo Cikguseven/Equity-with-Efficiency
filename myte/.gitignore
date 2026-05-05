@@ -1,0 +1,12 @@
+.vscode/
+/flores_200_dataset
+/flores_plus_devtest
+output.log
+/muse
+/models
+/src/__pycache__/
+/xtreme_up_v1.1
+/src/myt5/__pycache__/
+/bpe_corpus
+/logs
+/__pycache__/

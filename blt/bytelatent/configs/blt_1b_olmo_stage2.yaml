@@ -1,0 +1,224 @@
+name: blt_1b_olmo2_stage2
+dump_dir: /scratch/Projects/1/1/user/blt/tmp/blt-1b-olmo2-stage1/
+seed: 42
+debug_dynamo: false
+grad_acc_steps: 8
+gc_collect_freq: 1000
+probe_freq: null
+steps: 20000
+max_steps: null
+optim:
+  lr: 0.00004
+  weight_decay: 0.1
+  epsilon: 1.0e-08
+  beta1: 0.9
+  beta2: 0.95
+  clip: 1.0
+  scheduler: linear
+  warmup: 0
+  lr_min_ratio: 0.1
+  cycle_length: 1.0
+  cosine_theta: 1.0
+  annealing_step: 1000
+  decay_fraction: 0.1
+  exp_factor: 0.5
+model:
+  dim: 2048                    # hidden_size
+  n_layers: 16                 # num_hidden_layers (reduced from 16 to match param count)
+  head_dim: 128                # 2048 / 16 = 128
+  n_heads: 16                  # num_attention_heads
+  n_kv_heads: 16               # num_key_value_heads (no GQA)
+  ffn_dim_multiplier: 2        # Use explicit intermediate_size instead
+  multiple_of: 256
+  norm_eps: 1.0e-06            # rms_norm_eps from OLMo-2
+  rope_theta: 500000.0         # From OLMo-2 config
+  rope_use_fp32_in_outer_product: true
+  init_base_std: 0.02
+  init_std_factor: current_depth
+  max_seqlen: 4096
+  attn_impl: xformers
+  attn_bias_type: block_causal
+  eos_id: 2
+  seed: 6198
+  vocab_size: 260              # BLT vocab size
+  weight_tying: false          # tie_word_embeddings: false in OLMo-2
+
+  # BLT-specific parameters (adjusted for single transformer)
+  patch_in_forward: true
+  dim_token: null
+  dim_global: 2048             # Same as dim
+  dim_local_decoder: 1024      # Using single transformer
+  dim_local_encoder: 1024      # Using single transformer
+  n_layers_global: 16          # Same as n_layers
+  n_layers_local_decoder: 9
+  n_layers_local_encoder: 1
+  patch_size: 4.5
+  patching_mode: entropy
+  patching_threshold: 1.335442066192627
+  patching_threshold_add: null
+  monotonicity: false
+  patching_batch_size: 32
+  patching_device: cuda
+  max_patch_length: null
+  tie_local_encoder_decoder_logits: false
+  use_local_encoder_transformer: true
+  encoder_lm_loss: false
+  max_encoder_seq_length: 24576
+  pad_to_max_length: true
+  encoder_enable_byte_ngrams: false
+  encoder_enable_byte_group_hash: false
+  ngram_vocab_sizes: null
+  cross_attn_encoder: true
+  cross_attn_decoder: true
+  cross_attn_window_encoder: null
+  cross_attn_window_decoder: null
+  cross_attn_k: 2
+  cross_attn_nheads: 16
+  cross_attn_all_layers_decoder: true
+  cross_attn_all_layers_encoder: false
+  cross_attn_use_flex_attention: true
+  cross_attn_init_by_pooling: true
+  encoder_hash_byte_group_size:
+  - 3
+  - 4
+  - 5
+  - 6
+  - 7
+  - 8
+  encoder_hash_byte_group_vocab: 500002
+  encoder_hash_byte_group_nb_functions: 1
+  log_patch_lengths: false
+  non_linearity: swiglu
+  use_rope: true
+  recompute_fc1_out: false
+  recompute_fc3_out: false
+  recompute_attn: false
+  custom_bwd: false
+  layer_ckpt: none
+  init_use_gaussian: true
+  init_use_depth: current
+  alpha_depth: disabled
+  max_length: 256
+  norm_affine: true
+  pre_norm: false
+  norm_type: rmsnorm
+  dropout: 0.0
+  output_size: -1
+  architecture: vanilla
+  share_encoder_decoder_emb: true
+  global_local_decoder_residual_layer: null
+  tokenize_with_bpe_delimiter: false
+  patching_thresholds_str: null
+  tie_local_encoder_decoder: false
+  encoder_preds_low_entropy_toks: null
+  encoder_preds_random_toks: null
+  dim_token_emb: null
+  dim_patch_emb: null
+  encoder_ngram_table_dir: null
+  encoder_ngram_to_size_str: null
+  entropy_model_checkpoint_dir: null
+  entropy_model_is_ngram_model: false
+  downsampling_by_pooling: max
+  n_heads_global: 16
+  n_heads_local_decoder: 16
+  n_heads_local_encoder: 16
+  n_kv_heads_global: null
+  conv_kernel_size: null
+  local_attention_window_len: 512
+  sequence_parallel: false
+  loss_parallel: false
+  fuse_sequence_parallel: false
+  use_fsdp: true
+  attn_to_keep: all
+  pm_size: 0
+  full_logging_n_layers: 4
+
+entropy_model: null
+train_entropy_model: false
+distributed:
+  dp_shard: 1 # change to 16 for dual node
+  dp_replicate: 8 # change to 1 for dual node
+  tp_size: 1
+  selective_activation_checkpointing: true
+  compile: true
+  fsdp_type: full_shard
+  model_dtype: bf16
+  float8_recipe: null
+  float8_filter: layers\.[0-9]+\.
+  matmul_allow_tf32: false
+  allow_bf16_reduced_precision_reduction: true
+  detect_anomaly: false
+  compile_cache_size_limit: 8
+  spawn_method: forkserver
+env:
+  MKL_SERVICE_FORCE_INTEL: GNU
+  OMP_NUM_THREADS: '1'
+  MKL_NUM_THREADS: '1'
+  ENABLE_INTRA_NODE_COMM: '1'
+  TORCH_NCCL_AVOID_RECORD_STREAMS: '1'
+  TORCH_NCCL_ASYNC_ERROR_HANDLING: '1'
+checkpoint:
+  dump:
+    every: 200
+    keep: 1
+  eval:
+    every: 500000
+    keep: -1
+  init_ckpt_path: null
+profiling:
+  run: false
+  trace_folder: profiling
+  mem_warmup: 0
+  mem_steps: 4
+  profile_warmup: 100
+  profile_steps: 4
+logging:
+  freq: 50
+  acc_freq: null
+  wandb:
+    entity: user
+    group: blt_1b_olmo2_stage2
+    name: blt_1b_olmo2_stage2
+    project: Training
+async_eval_gpus: null
+eval: null
+eval_on_gpus: 8 # change to 16 for dual node
+
+data:
+  root_dir: /scratch/Projects/1/1/user/data
+  sources:
+    fineweb2_SEA_100M_sentences_blt: 1.0
+  batch_size: 8
+  seq_len: 4096
+  seed: 42
+  add_bos: true
+  add_eos: true
+  load_async: true
+  async_persist_type: approximate
+  prefetch_size: 200
+  dataset_files: null
+  entropy_model_name: transformer_100m
+  arrow_batch_size: 20
+  buffer_size: 512
+  file_format: json
+  pad_to_max_length: true
+  max_encoder_seq_length: 24576
+  enable_byte_ngrams: false
+  add_patches: true
+  tokenizer_args:
+    name: blt
+    init_kwargs:
+      bpe_tokenizer_path: /scratch/Projects/1/1/user/blt/tokenizer/tokenizer.model
+  patcher_args:
+    patching_mode: entropy
+    patching_device: cuda
+    realtime_patching: true
+    entropy_model_checkpoint_dir: /scratch/Projects/1/1/user/blt/blt-entropy
+    threshold: 1.335442066192627
+    threshold_add: null
+    max_patch_length: null
+    patch_size: 4.5
+    patching_batch_size: 1
+    device: cuda
+    monotonicity: false
+    log_time: false

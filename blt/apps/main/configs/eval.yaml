@@ -1,0 +1,51 @@
+ckpt_dir: "/scratch/Projects/1/1/user/blt/hf-weights/blt_1b"
+dump_dir: "/scratch/Projects/1/1/user/blt/dump-dir"
+entropy_ckpt_dir: "/scratch/Projects/1/1/user/blt/hf-weights/entropy_model"
+generator:
+  max_tokens: 2048
+  dtype: bf16
+  temperature: 0.0
+  top_p: 0.95
+harness:
+  tasks:
+    # ── English benchmarks ──────────────────────────────────────────────────
+    - task: hellaswag
+      num_fewshot: 0
+    - task: piqa
+      num_fewshot: 0
+    - task: arc_challenge
+      num_fewshot: 0
+
+    # # ── XNLI (natural language inference) ──────────────────────────────────
+    # - task: xnli_en
+    #   num_fewshot: 0
+    # - task: xnli_th
+    #   num_fewshot: 0
+    # - task: xnli_vi
+    #   num_fewshot: 0
+    # - task: xnli_zh
+    #   num_fewshot: 0
+
+    # # ── XCOPA (commonsense causal reasoning) ────────────────────────────────
+    # - task: xcopa_en
+    #   num_fewshot: 0
+    # - task: xcopa_id
+    #   num_fewshot: 0
+    # - task: xcopa_ta
+    #   num_fewshot: 0
+    # - task: xcopa_th
+    #   num_fewshot: 0
+    # - task: xcopa_vi
+    #   num_fewshot: 0
+    # - task: xcopa_zh
+    #   num_fewshot: 0
+
+    # # ── XStoryCloze (cross-lingual story understanding) ─────────────────────
+    # - task: xstorycloze_en
+    #   num_fewshot: 0
+    # - task: xstorycloze_id
+    #   num_fewshot: 0
+    # - task: xstorycloze_my
+    #   num_fewshot: 0
+    # - task: xstorycloze_zh
+    #   num_fewshot: 0
