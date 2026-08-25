@@ -1,4 +1,4 @@
-# Tokenizer Project
+# Equity with Efficiency
 
 This repository is a research workspace that combines several upstream projects (BLT, OLMo, MYTE, Parity-aware BPE) plus a small set of scripts/configs for training, evaluation, and analysis.
 
